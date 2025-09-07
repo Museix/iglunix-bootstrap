@@ -46,7 +46,7 @@ jobs:
         run: ./boot.sh ${{ matrix.arch }}
 
       - name: Upload sysroot
-        uses: alehechka/upload-tartifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: sysroot-${{ matrix.arch }}
           path: sysroot/
