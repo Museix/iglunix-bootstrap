@@ -22,7 +22,7 @@ jobs:
         arch: [ x86_64, aarch64, riscv64 ]
 
     # The type of runner that the job will run on
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -35,8 +35,8 @@ jobs:
           wget https://apt.llvm.org/llvm.sh
           sed -e 's/samu/ninja/g' -i *.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 14
-          sudo apt install libclang-rt-14-dev llvm llvm-14
+          sudo ./llvm.sh 20
+          sudo apt install libclang-rt-20-dev llvm llvm-20
           /usr/bin/clang --version
           /usr/bin/llvm-ar --version
           /usr/bin/llvm-ranlib --version
