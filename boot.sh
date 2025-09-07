@@ -6,12 +6,12 @@ else
 	export ARCH=$1
 fi
 
-export LLVM_VER=16.0.0
-export MUSL_VER=1.2.3
-export KERN_VER=6.2.7
+export LLVM_VER=21.1.0
+export MUSL_VER=1.2.5
+export KERN_VER=6.12.44
 export MKSH_VER=R59c
-export BUSYBOX_VER=1.36.0
-export TOYBOX_VER=0.8.9
+export BUSYBOX_VER=1.37.0
+export TOYBOX_VER=0.8.12
 
 export TARGET=$ARCH-linux-musl
 
@@ -56,7 +56,7 @@ mkdir -p "$SYSROOT/lib"
 
 ./03-compiler-rt.sh
 
-sudo cp $SYSROOT/usr/lib/clang/16/lib/linux/* $(clang -print-resource-dir)/lib/linux
+sudo cp $SYSROOT/usr/lib/clang/21/lib/linux/* $(clang -print-resource-dir)/lib/linux
 
 ./04-musl.sh
 
