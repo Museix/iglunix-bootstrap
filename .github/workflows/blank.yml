@@ -36,9 +36,9 @@ jobs:
           sed -e 's/samu/ninja/g' -i *.sh
           chmod +x llvm.sh
           sudo ./llvm.sh
-          update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 200
-          update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-20 200
-          update-alternatives --install /usr/bin/llvm-ranlib llvm-ranlib /usr/bin/llvm-ranlib-20 200
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 200
+          sudo update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-20 200
+          sudo update-alternatives --install /usr/bin/llvm-ranlib llvm-ranlib /usr/bin/llvm-ranlib-20 200
           /usr/bin/clang --version
           /usr/bin/llvm-ar --version
           /usr/bin/llvm-ranlib --version
