@@ -28,18 +28,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      
-      - name: Install deps
-        run: |
-          sudo apt install ninja-build qemu-user
-          wget https://apt.llvm.org/llvm.sh
-          sed -e 's/samu/ninja/g' -i *.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 20
-          sudo apt install libclang-rt-20-dev llvm-dev llvm-20-dev
-          /usr/bin/clang --version
-          /usr/bin/llvm-ar --version
-          /usr/bin/llvm-ranlib --version
 
       # Runs a single command using the runners shell
       - name: Run the bootstrap script
