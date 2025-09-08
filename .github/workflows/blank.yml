@@ -1,54 +1,120 @@
-# This is a basic workflow to help you get started with Actions
+name: Iglunix Bootstrap CI
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
     strategy:
       matrix:
         arch: [ x86_64, aarch64, riscv64 ]
+      fail-fast: false
 
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    timeout-minutes: 180
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      
-      - name: Install deps
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Free up disk space
         run: |
-          sudo apt install ninja-build qemu-user
-          wget https://apt.llvm.org/llvm.sh
-          sed -e 's/samu/ninja/g' -i *.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 200
-          sudo update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-20 200
-          sudo update-alternatives --install /usr/bin/llvm-ranlib llvm-ranlib /usr/bin/llvm-ranlib-20 200
-          /usr/bin/clang --version
-          /usr/bin/llvm-ar --version
-          /usr/bin/llvm-ranlib --version
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -h
 
-      # Runs a single command using the runners shell
-      - name: Run the bootstrap script
-        run: ./boot.sh ${{ matrix.arch }}
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            bmake \
+            wget \
+            curl \
+            unzip \
+            patch \
+            perl \
+            python3 \
+            pkg-config \
+            qemu-user-static \
+            binfmt-support
 
-      - name: Upload sysroot
+      - name: Install LLVM/Clang toolchain
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          echo "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-21 main" | sudo tee /etc/apt/sources.list.d/llvm.list
+          sudo apt-get update
+          sudo apt-get install -y \
+            clang-21 \
+            lld-21 \
+            llvm-21 \
+            libc++-21-dev \
+            libc++abi-21-dev \
+            libunwind-21-dev
+          
+          # Set up alternatives
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-21 100
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-21 100
+          sudo update-alternatives --install /usr/bin/lld lld /usr/bin/lld-21 100
+          sudo update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-21 100
+          sudo update-alternatives --install /usr/bin/llvm-ranlib llvm-ranlib /usr/bin/llvm-ranlib-21 100
+          sudo update-alternatives --install /usr/bin/llvm-strip llvm-strip /usr/bin/llvm-strip-21 100
+
+      - name: Verify toolchain
+        run: |
+          clang --version
+          clang++ --version
+          lld --version
+          llvm-ar --version
+
+      - name: Set up build environment
+        run: |
+          # Replace samu with ninja in scripts
+          find . -name "*.sh" -exec sed -i 's/samu/ninja/g' {} \;
+          
+          # Make scripts executable
+          chmod +x *.sh
+          
+          # Create necessary directories
+          mkdir -p src build sysroot
+
+      - name: Run bootstrap for ${{ matrix.arch }}
+        run: |
+          export CC=clang
+          export CXX=clang++
+          export AR=llvm-ar
+          export RANLIB=llvm-ranlib
+          export STRIP=llvm-strip
+          ./boot.sh ${{ matrix.arch }}
+
+      - name: Verify build outputs
+        run: |
+          ls -la sysroot/
+          ls -la sysroot/usr/
+          find sysroot/usr/bin -type f | head -10 || true
+          find sysroot/usr/lib -name "*.so*" | head -10 || true
+
+      - name: Upload sysroot artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sysroot-${{ matrix.arch }}
+          name: iglunix-sysroot-${{ matrix.arch }}
           path: sysroot/
+          retention-days: 7
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ matrix.arch }}
+          path: |
+            *.log
+            build/
+          retention-days: 3
