@@ -1,7 +1,7 @@
 # Iglunix Bootstrap Scripts
 These scripts build an LLVM/Musl sysroot from a GNU host.
 ### Musix's Version
-this builds more than just the sysroot, it builds a base system, ready for chroot.
+This builds more than just the sysroot, it builds a base system, ready for chroot.
 
 ## Building
 
