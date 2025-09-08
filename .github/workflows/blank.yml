@@ -49,21 +49,15 @@ jobs:
 
       - name: Install LLVM/Clang toolchain
         run: |
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-21 main" | sudo tee /etc/apt/sources.list.d/llvm.list
-          sudo apt-get update
-          sudo apt-get install -y \
-            clang-21 \
-            lld-21 \
-            llvm-21 \
-            libc++-21-dev \
-            libc++abi-21-dev \
-            libunwind-21-dev
+          # Use the official LLVM installation script
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 21
           
-          # Set up alternatives
+          # Set up alternatives for LLVM 21
           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-21 100
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-21 100
-          sudo update-alternatives --install /usr/bin/lld lld /usr/bin/lld-21 100
+          sudo update-alternatives --install /usr/bin/ld.lld ld.lld /usr/bin/ld.lld-21 100
           sudo update-alternatives --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-21 100
           sudo update-alternatives --install /usr/bin/llvm-ranlib llvm-ranlib /usr/bin/llvm-ranlib-21 100
           sudo update-alternatives --install /usr/bin/llvm-strip llvm-strip /usr/bin/llvm-strip-21 100
@@ -72,7 +66,7 @@ jobs:
         run: |
           clang --version
           clang++ --version
-          lld --version
+          ld.lld --version
           llvm-ar --version
 
       - name: Set up build environment
