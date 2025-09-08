@@ -3,7 +3,6 @@
 if ! command -v bmake >/dev/null 2>&1; then
 echo 'YOU MUST HAVE BMAKE INSTALLED ON YOUR HOST TO BOOTSTRAP BMAKE' && exit 1
 fi
-# Check if we have write permissions to SYSROOT
 SUDO_CMD="sudo"
 
 
