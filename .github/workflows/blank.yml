@@ -45,6 +45,7 @@ jobs:
             python3 \
             pkg-config \
             qemu-user-static \
+            qemu-user \
             binfmt-support
 
       - name: Remove conflicting LLVM packages
@@ -92,6 +93,17 @@ jobs:
           
           # Create necessary directories
           mkdir -p src build sysroot
+          
+          # Set up QEMU binfmt for cross-architecture execution
+          sudo systemctl restart systemd-binfmt
+          
+          # Verify QEMU emulators are available
+          which qemu-aarch64-static || echo "qemu-aarch64-static not found"
+          which qemu-riscv64-static || echo "qemu-riscv64-static not found"
+          
+          # Create symlinks for QEMU emulators without -static suffix
+          sudo ln -sf /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64 || true
+          sudo ln -sf /usr/bin/qemu-riscv64-static /usr/bin/qemu-riscv64 || true
 
       - name: Run bootstrap for ${{ matrix.arch }}
         run: |
