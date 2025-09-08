@@ -21,3 +21,8 @@ src
 .dirs
 .etc
 .bmake
+.ncurses
+.curl
+.zlib-ng
+.openssl
+.openssl-stage1

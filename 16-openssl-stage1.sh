@@ -1,15 +1,6 @@
 #!/bin/sh -e
-[ -f "$REPO_ROOT/.openssl" ] && exit 0
-
-# Check for required tools
-for tool in make perl; do
-    if ! command -v $tool >/dev/null 2>&1; then
-        echo "ERROR: $tool is required to build OpenSSL"
-        exit 1
-    done
-done
-
-echo
+[ -f "$REPO_ROOT/.openssl-stage1" ] && exit 0
+SUDO_CMD="sudo"
 
 echo '>>> Downloading OpenSSL source'
 cd $SOURCES
@@ -24,17 +15,10 @@ echo '>>> Configuring OpenSSL'
     --prefix=/usr \
     --openssldir=/etc/ssl \
     --libdir=lib \
-    no-shared \
+    shared \
     no-zlib \
-    no-async \
-    no-ssl3 \
-    no-weak-ssl-ciphers \
-    -DOPENSSL_NO_SSL3 \
-    -DOPENSSL_NO_WEAK_SSL_CIPHERS \
-    -DOPENSSL_NO_SSL3_METHOD \
     linux-$(uname -m) \
-    -static \
-    -fPIC \
+    -fPIE -fPIC \
     -I$SYSROOT/usr/include \
     -L$SYSROOT/usr/lib \
     -Wl,-rpath=$SYSROOT/usr/lib \
@@ -54,9 +38,9 @@ make -j$(nproc)
 
 # Install to sysroot
 echo '>>> Installing OpenSSL to sysroot'
-make DESTDIR=$SYSROOT install_sw install_ssldirs
+$SUDO_CMD make DESTDIR=$SYSROOT install_sw install_ssldirs
 
 # Create version file to prevent recompilation
-touch $REPO_ROOT/.openssl
+touch $REPO_ROOT/.openssl-stage1
 
 echo '>>> OpenSSL installed successfully'

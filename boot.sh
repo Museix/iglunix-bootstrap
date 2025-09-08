@@ -14,8 +14,9 @@ export BUSYBOX_VER=1.37.0
 export TOYBOX_VER=0.8.12
 export BMAKE_VER=20250804
 export OPENSSL_VER=3.5.2
-export ZSTD_VER=1.5.7
-
+export ZLIB_NG_VER=2.2.2
+export CURL_VER=8.15.0
+export NCURSES_VER=6.5
 export TARGET=$ARCH-linux-musl
 
 export REPO_ROOT=$(realpath $(dirname $0))
@@ -94,3 +95,13 @@ env -u CFLAGS -u CXXFLAGS -u LDFLAGS ./11-tblgen.sh
 
 # Build bmake
 ./15-bmake.sh
+
+./16-openssl-stage1.sh
+
+./17-zlib.sh
+
+./18-openssl.sh
+
+./19-ncurses.sh
+
+./20-curl.sh
