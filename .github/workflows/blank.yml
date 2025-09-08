@@ -47,12 +47,25 @@ jobs:
             qemu-user-static \
             binfmt-support
 
+      - name: Remove conflicting LLVM packages
+        run: |
+          # Remove existing LLVM packages to avoid conflicts
+          sudo apt-get remove -y \
+            clang* \
+            llvm* \
+            libc++* \
+            libc++abi* \
+            libclang* \
+            lld* || true
+          sudo apt-get autoremove -y
+          sudo rm -rf /usr/lib/llvm-* /usr/lib/cmake/clang* /usr/lib/cmake/llvm*
+
       - name: Install LLVM/Clang toolchain
         run: |
           # Use the official LLVM installation script
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 21
+          sudo ./llvm.sh 21 all
           
           # Set up alternatives for LLVM 21
           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-21 100
@@ -87,6 +100,9 @@ jobs:
           export AR=llvm-ar
           export RANLIB=llvm-ranlib
           export STRIP=llvm-strip
+          export CMAKE_PREFIX_PATH=/usr/lib/llvm-21
+          export LLVM_DIR=/usr/lib/llvm-21/lib/cmake/llvm
+          export Clang_DIR=/usr/lib/llvm-21/lib/cmake/clang
           ./boot.sh ${{ matrix.arch }}
 
       - name: Verify build outputs
