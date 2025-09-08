@@ -12,6 +12,9 @@ export KERN_VER=6.12.44
 export MKSH_VER=R59c
 export BUSYBOX_VER=1.37.0
 export TOYBOX_VER=0.8.12
+export BMAKE_VER=20250804
+export OPENSSL_VER=3.5.2
+export ZSTD_VER=1.5.7
 
 export TARGET=$ARCH-linux-musl
 
@@ -84,3 +87,10 @@ export CXX=$(pwd)/$ARCH-iglunix-linux-musl-c++.sh
 env -u CFLAGS -u CXXFLAGS -u LDFLAGS ./11-tblgen.sh
 
 ./12-llvm.sh
+
+./13-dirs.sh
+
+./14-etc.sh
+
+# Build bmake
+./15-bmake.sh

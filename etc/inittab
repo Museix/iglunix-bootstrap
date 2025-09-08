@@ -1,0 +1,44 @@
+# /etc/inittab: init(8) configuration.
+# $OpenBSD: inittab,v 1.1 2014/07/11 21:20:10 tedu Exp $
+
+# The default runlevel.
+id:3:initdefault:
+
+# Boot-time system configuration/initialization script.
+si::sysinit:/etc/rc.sysinit
+
+# What to do in single-user mode.
+~~:S:wait:/sbin/sulogin
+
+# /etc/rc.multi-user startup script.
+rc::bootwait:/etc/rc.multi
+
+# What to do when CTRL-ALT-DEL is pressed.
+ca:12345:ctrlaltdel:/sbin/shutdown -t1 -a -r now
+
+# Action on special keypress (ALT-UpArrow).
+kb::kbrequest:/bin/echo "Keyboard Request--edit /etc/inittab to let this work."
+
+# When our UPS tells us power has failed, assume we have a few minutes
+# of power left.  Schedule a shutdown for 2 minutes from now.
+# This does, of course, assume you have powerd installed and your
+# UPS connected and working correctly.
+pf::powerwait:/sbin/shutdown -f -h +2 "Power Failure; System Shutting Down"
+
+# If power was restored before the shutdown kicked in, cancel it.
+pn::powerfailnow:/sbin/shutdown -c "Power Restored; Shutdown Cancelled"
+
+# Run gettys in standard runlevels
+1:2345:respawn:/sbin/getty 38400 tty1
+2:23:respawn:/sbin/getty 38400 tty2
+3:23:respawn:/sbin/getty 38400 tty3
+4:23:respawn:/sbin/getty 38400 tty4
+5:23:respawn:/sbin/getty 38400 tty5
+6:23:respawn:/sbin/getty 38400 tty6
+
+# Example how to put a getty on a serial line (for a terminal)
+#T0:23:respawn:/sbin/getty -L ttyS0 9600 vt100
+#T1:23:respawn:/sbin/getty -L ttyS1 9600 vt100
+
+# Example how to put a getty on a modem line.
+#T3:23:respawn:/sbin/mgetty -x0 -s 57600 ttyS3
