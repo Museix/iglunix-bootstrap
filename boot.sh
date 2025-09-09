@@ -131,18 +131,29 @@ env -u CFLAGS -u CXXFLAGS -u LDFLAGS ./11-tblgen.sh
 ./24-samurai.sh
 
 ./25-libexecinfo.sh
+
 ./26-libiconv.sh
+
 ./27-libmd.sh
+
 ./28-musl-fts.sh
+
 ./29-libbsd.sh
+
 ./30-openpam.sh
+
 ./31-doas.sh
-./32-pkgconf.sh
-./33-m4.sh
-./34-flex.sh
-export CC="/usr/bin/musl-clang"
-export CXX="/usr/bin/musl-clang++"
-./31-gettext-tiny.sh
-./34-perl.sh
-./35-cmake.sh
-./36-git.sh
+
+./32-gettext-tiny.sh
+
+./33-pkgconf.sh
+
+./34-m4.sh
+
+./35-flex.sh
+
+./36-perl.sh
+
+./37-cmake.sh
+
+./38-git.sh
