@@ -162,7 +162,7 @@ chmod 755 "$SYSROOT/var/lock"
 
 ./03-compiler-rt.sh
 
-sudo cp $SYSROOT/usr/lib/clang/16/lib/linux/* `clang -print-resource-dir`/lib/linux
+sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* `clang -print-resource-dir`/lib/linux
 
 ./04-musl.sh
 
