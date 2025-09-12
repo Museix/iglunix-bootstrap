@@ -4,10 +4,10 @@
 export TARGET=""
 
 cd $SOURCES/busybox-$BUSYBOX_VER
-patch -p1 < "$REPO_ROOT/busybox-no-cbq.patch"
-$MAKE CC=$CC SKIP_KNOWN_BUGS=1 CFLAGS="-O0 -fpermissive" LDFLAGS= STRIP=llvm-strip defconfig
-$MAKE CC=$CC SKIP_KNOWN_BUGS=1 CFLAGS="-O0 -fpermissive" LDFLAGS= STRIP=llvm-strip -j1
-$MAKE CC=$CC SKIP_KNOWN_BUGS=1 CFLAGS="-O0 -fpermissive" LDFLAGS= STRIP=llvm-strip install
+
+$MAKE CC=$CC CFLAGS=-O0 LDFLAGS= STRIP=llvm-strip defconfig
+$MAKE CC=$CC CFLAGS=-O0 LDFLAGS= STRIP=llvm-strip -j1
+$MAKE CC=$CC CFLAGS=-O0 LDFLAGS= STRIP=llvm-strip install
 
 rm _install/linuxrc
 rm _install/bin/ln

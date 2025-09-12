@@ -6,33 +6,13 @@ else
 	export ARCH=$1
 fi
 
-export LLVM_VER=21.1.0
-export MUSL_VER=1.2.5
-export KERN_VER=6.12.44
+export LLVM_VER=16.0.0
+export MUSL_VER=1.2.3
+export KERN_VER=6.2.7
 export MKSH_VER=R59c
-export BUSYBOX_VER=1.37.0
-export TOYBOX_VER=0.8.12
-export BMAKE_VER=20250804
-export OPENSSL_VER=3.5.2
-export ZLIB_NG_VER=2.2.2
-export CURL_VER=8.15.0
-export NCURSES_VER=6.5
-export LIBARCHIVE_VER=3.8.1
-export BYACC_VER=20240109
-export SAMURAI_VER=1.2
-export LIBEXECINFO_VER=1.1.0.13
-export LIBICONV_VER=1.17
-export LIBMD_VER=1.1.0
-export FTS_VER=1.2.8
-export LIBBSD_VER=0.12.2
-export OPENPAM_VER=20250531
-export DOAS_VER=6.8.2
-export PKGCONF_VER=2.3.0
-export OM4_VER=0.0.1
-export FLEX_VER=2.6.4
-export CMAKE_VER=3.28.3
-export XBPS_VER=0.60.5
-export GIT_VER=2.51.0
+export BUSYBOX_VER=1.36.0
+export TOYBOX_VER=0.8.9
+
 export TARGET=$ARCH-linux-musl
 
 export REPO_ROOT=$(realpath $(dirname $0))
@@ -76,7 +56,7 @@ mkdir -p "$SYSROOT/lib"
 
 ./03-compiler-rt.sh
 
-sudo cp $SYSROOT/usr/lib/clang/21/lib/linux/* $(clang -print-resource-dir)/lib/linux
+sudo cp $SYSROOT/usr/lib/clang/16/lib/linux/* $(clang -print-resource-dir)/lib/linux
 
 ./04-musl.sh
 
@@ -104,56 +84,3 @@ export CXX=$(pwd)/$ARCH-iglunix-linux-musl-c++.sh
 env -u CFLAGS -u CXXFLAGS -u LDFLAGS ./11-tblgen.sh
 
 ./12-llvm.sh
-
-./13-dirs.sh
-
-./14-etc.sh
-
-# Build bmake
-./15-bmake.sh
-
-./16-openssl-stage1.sh
-
-./17-zlib.sh
-
-./18-openssl.sh
-
-./19-ncurses.sh
-
-./20-curl.sh
-
-./21-libarchive.sh
-
-./22-xbps.sh
-
-./23-byacc.sh
-
-./24-samurai.sh
-
-./25-libexecinfo.sh
-
-./26-libiconv.sh
-
-./27-libmd.sh
-
-./28-musl-fts.sh
-
-./29-libbsd.sh
-
-./30-openpam.sh
-
-./31-doas.sh
-
-./32-gettext-tiny.sh
-
-./33-pkgconf.sh
-
-./34-m4.sh
-
-./35-flex.sh
-
-./36-perl.sh
-
-./37-cmake.sh
-
-./38-git.sh

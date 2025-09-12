@@ -1,5 +1,0 @@
-# /etc/shells: valid login shells
-/bin/sh
-/bin/mksh
-/bin/ash
-/usr/bin/mksh
