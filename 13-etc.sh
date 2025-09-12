@@ -17,7 +17,7 @@ error() {
 }
 
 # Source directory containing etc files
-ETC_SOURCE="/home/lucy/src/iglunix-bootstrap/etc"
+ETC_SOURCE="$SYSROOT/etc"
 ETC_TARGET="$SYSROOT/etc"
 
 log "Installing /etc directory structure..."
