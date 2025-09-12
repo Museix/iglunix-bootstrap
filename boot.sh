@@ -22,7 +22,7 @@ error() {
 
 export LLVM_VER=21.1.0
 export MUSL_VER=1.2.5
-export KERN_VER=6.2.47
+export KERN_VER=6.12.47
 export MKSH_VER=R59c
 export BUSYBOX_VER=1.37.0
 export TOYBOX_VER=0.8.12
