@@ -1,0 +1,62 @@
+# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))
+# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).
+
+# Set default PATH for all users
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export PATH
+
+# Set default umask
+umask 022
+
+# Set default editor to vi (available in busybox)
+EDITOR=vi
+export EDITOR
+
+# Set default pager
+PAGER=less
+export PAGER
+
+# Set locale
+LC_ALL=C
+export LC_ALL
+
+# Set timezone (can be overridden in /etc/localtime)
+TZ=UTC
+export TZ
+
+# Set default shell to mksh (Iglunix default)
+SHELL=/bin/mksh
+export SHELL
+
+# Source additional profile scripts if they exist
+# Only source scripts that are compatible with the current shell
+if [ -n "$BASH_VERSION" ]; then
+    # Running bash - source all .sh files
+    for i in /etc/profile.d/*.sh; do
+        if [ -r "$i" ]; then
+            . "$i"
+        fi
+    done
+elif [ -n "$KSH_VERSION" ] || [ "${0##*/}" = "mksh" ]; then
+    # Running mksh/ksh - only source mksh-compatible files
+    for i in /etc/profile.d/*.mksh /etc/profile.d/*.ksh; do
+        if [ -r "$i" ]; then
+            . "$i"
+        fi
+    done
+else
+    # Running other POSIX shell - source basic .sh files carefully
+    for i in /etc/profile.d/*.sh; do
+        if [ -r "$i" ]; then
+            case "$i" in
+                */bash_completion.sh|*/readline.sh) 
+                    # Skip bash-specific scripts
+                    ;;
+                *)
+                    . "$i" 2>/dev/null || true
+                    ;;
+            esac
+        fi
+    done
+fi
+unset i

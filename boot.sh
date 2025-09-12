@@ -5,6 +5,18 @@ if [ -z "$1" ]; then
 else
 	export ARCH=$1
 fi
+log() {
+    echo "\033[0;32m[INFO]\033[0m $1"
+}
+
+warn() {
+    echo "\033[1;33m[WARN]\033[0m $1"
+}
+
+error() {
+    echo "\033[0;31m[ERROR]\033[0m $1"
+    exit 1
+}
 
 export LLVM_VER=16.0.0
 export MUSL_VER=1.2.3
@@ -47,6 +59,52 @@ mkdir -p "$SYSROOT/usr/bin"
 mkdir -p "$SYSROOT/usr/lib"
 mkdir -p "$SYSROOT/bin"
 mkdir -p "$SYSROOT/lib"
+mkdir -p "$SYSROOT"/{sbin,lib64,var,opt,srv,mnt,media}
+mkdir -p "$SYSROOT"/usr/{sbin,lib64,share,include,src,local}
+mkdir -p "$SYSROOT"/usr/local/{sbin,share,include}
+
+# Variable data directories
+mkdir -p "$SYSROOT"/var/{log,tmp,cache,lib,spool,run,lock}
+mkdir -p "$SYSROOT"/var/lib/{misc,locate}
+mkdir -p "$SYSROOT"/var/spool/{mail,cron}
+
+# Temporary directories
+mkdir -p "$SYSROOT"/tmp
+chmod 1777 "$SYSROOT"/tmp
+
+# Device and system directories
+mkdir -p "$SYSROOT"/{dev,proc,sys,run}
+
+# Home directories
+mkdir -p "$SYSROOT"/{home,root}
+chmod 700 "$SYSROOT"/root
+
+# Boot directory
+mkdir -p "$SYSROOT"/boot
+
+# Configuration directory (will be populated by 14-etc.sh)
+mkdir -p "$SYSROOT"/etc
+
+# Create symlinks for compatibility
+log "Creating compatibility symlinks..."
+
+# lib64 -> lib symlinks for musl compatibility
+if [ "$ARCH" = "x86_64" ]; then
+     ln -sf lib "$SYSROOT"/lib64
+     ln -sf /usr/lib "$SYSROOT"/usr/lib64
+fi
+
+# Create /usr/lib/locale for locale support
+mkdir -p "$SYSROOT"/usr/lib/locale
+
+# Set proper permissions
+log "Setting directory permissions..."
+chmod 755 "$SYSROOT"/{bin,sbin,lib,usr,var,opt,srv,mnt,media}
+chmod 755 "$SYSROOT"/usr/{bin,sbin,lib,share,include,src,local}
+chmod 755 "$SYSROOT"/var/{log,cache,lib,spool}
+chmod 1777 "$SYSROOT"/var/tmp
+chmod 755 "$SYSROOT"/var/run
+chmod 755 "$SYSROOT"/var/lock
 
 ./00-fetch.sh
 
@@ -84,3 +142,5 @@ export CXX=$(pwd)/$ARCH-iglunix-linux-musl-c++.sh
 env -u CFLAGS -u CXXFLAGS -u LDFLAGS ./11-tblgen.sh
 
 ./12-llvm.sh
+
+./13-etc.sh

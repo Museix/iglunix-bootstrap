@@ -6,3 +6,15 @@ chroot
 sanity
 sysroot
 src
+.compiler-rt
+.libcxx
+.libunwind
+.linux-headers
+.mksh
+.busybox
+.musl
+.musl-headers
+.toybox
+.tblgen
+.llvm
+.etc

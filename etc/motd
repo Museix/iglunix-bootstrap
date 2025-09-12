@@ -1,0 +1,18 @@
+ ___       _             _      
+|_ _|__ _ | |_   _ _ __ (_)_  __
+ | |/ _` || | | | | '_ \| \ \/ /
+ | | (_| || | |_| | | | | |>  < 
+|___\__, ||_|\__,_|_| |_|_/_/\_\
+     |___/                      
+
+Welcome to Iglunix - Unix-like distribution with no GNU components
+
+System Information:
+- Kernel: Linux
+- Shell: mksh (default)
+- C Library: musl
+- Compiler: clang/LLVM
+- Init System: Traditional SysV-style init
+
+For more information, visit: https://iglunix.xyz/
+Join our Discord: https://discord.gg/NKB9qD2bMx
