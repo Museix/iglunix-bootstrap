@@ -26,6 +26,7 @@ export KERN_VER=6.12.47
 export MKSH_VER=R59c
 export BUSYBOX_VER=1.37.0
 export TOYBOX_VER=0.8.12
+export GMAKE_VER=4.4.1
 
 export TARGET=$ARCH-linux-musl
 
@@ -193,3 +194,6 @@ env -u CFLAGS -u CXXFLAGS -u LDFLAGS ./11-tblgen.sh
 ./12-llvm.sh
 
 ./13-etc.sh
+
+# Build and install GNU Make
+./14-gmake.sh
