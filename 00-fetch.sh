@@ -35,7 +35,7 @@ for patch in "$REPO_ROOT/patches/busybox/busybox-"*.patch; do
     patch -p1 < "$patch"
 done
 cd $SOURCES/llvm-$LLVM_VER
-for patch in "$REPO_ROOT/patches/llvm/llvm-"*.patch; do
+for patch in "$REPO_ROOT/patches/llvm/"*.patch; do
     echo "Applying patch: $(basename "$patch")"
     patch -p1 < "$patch"
 done
