@@ -23,4 +23,21 @@ tar -xf $SOURCES/busybox-$BUSYBOX_VER.tar.bz2 -C $SOURCES
 tar -xf $SOURCES/mksh-$MKSH_VER.tgz -C $SOURCES
 mv $SOURCES/mksh $SOURCES/mksh-$MKSH_VER
 
+# Apply patches
+cd $SOURCES/musl-$MUSL_VER
+for patch in "$REPO_ROOT/patches/musl/musl-"*.patch; do
+    echo "Applying patch: $(basename "$patch")"
+    patch -p1 < "$patch"
+done
+cd $SOURCES/busybox-$BUSYBOX_VER
+for patch in "$REPO_ROOT/patches/busybox/busybox-"*.patch; do
+    echo "Applying patch: $(basename "$patch")"
+    patch -p1 < "$patch"
+done
+cd $SOURCES/llvm-$LLVM_VER
+for patch in "$REPO_ROOT/patches/llvm/llvm-"*.patch; do
+    echo "Applying patch: $(basename "$patch")"
+    patch -p1 < "$patch"
+done
+
 touch $REPO_ROOT/.fetched
