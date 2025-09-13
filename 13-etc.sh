@@ -33,7 +33,7 @@ fi
 log "Copying etc files from $ETC_SOURCE to $ETC_TARGET"
 
 # Copy all files and directories from source etc
-cp -r "$ETC_SOURCE"/* "$ETC_TARGET"/
+cp -r "$ETC_SOURCE" "$ETC_TARGET"/
 
 # Create additional directories that might not exist
 mkdir -p "$ETC_TARGET"/{init.d,rc.d,cron.d,logrotate.d,sudoers.d}
