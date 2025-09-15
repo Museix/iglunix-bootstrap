@@ -19,3 +19,8 @@ src
 .llvm
 .etc
 .make
+.openssl
+.zlib-ng
+.cryptlib
+.libedit
+.ncurses

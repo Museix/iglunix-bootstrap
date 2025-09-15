@@ -2,7 +2,7 @@
 [ -f "$REPO_ROOT/.make" ] && exit 0
 GMAKE_SRC="$SOURCES/make-$GMAKE_VER"
 GMAKE_BUILD="$BUILD/make-$GMAKE_VER"
-log "Building GNU Make $GMAKE_VER..."
+echo "Building GNU Make $GMAKE_VER..."
 
 # Create build directory
 mkdir -p "$GMAKE_BUILD"

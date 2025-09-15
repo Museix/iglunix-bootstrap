@@ -10,15 +10,16 @@ fi
 log() {
     echo "\033[0;32m[INFO]\033[0m $1"
 }
-
+export log
 warn() {
     echo "\033[1;33m[WARN]\033[0m $1"
 }
-
+export warn
 error() {
     echo "\033[0;31m[ERROR]\033[0m $1"
     exit 1
 }
+export error
 
 export LLVM_VER=21.1.0
 export MUSL_VER=1.2.5
@@ -27,6 +28,10 @@ export MKSH_VER=R59c
 export BUSYBOX_VER=1.37.0
 export TOYBOX_VER=0.8.12
 export GMAKE_VER=4.4.1
+export ZLIB_NG_VER=2.2.5
+export OPENSSL_VER=3.5.2
+export CRYPTLIB_VER=3.4.8
+export NCURSES_VER=6.5
 
 export TARGET=$ARCH-linux-musl
 
@@ -38,7 +43,7 @@ BUILD="$REPO_ROOT/build"
 SYSROOT="$REPO_ROOT/sysroot"
 export SOURCES BUILD SYSROOT
 
-COMMON_FLAGS="-O2 -pipe --sysroot=$SYSROOT -unwindlib=libunwind"
+COMMON_FLAGS="-O2 -pipe -fpie -fpic --sysroot=$SYSROOT -unwindlib=libunwind"
 
 # because ubuntu uses old llvm (14) we need to pass -mno-relax still
 if [ "$ARCH" = "riscv64" ]; then
