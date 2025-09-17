@@ -33,7 +33,7 @@ if [ -f "$REPO_ROOT/.uutilspatched" ]; then
     else
     for patch in "$REPO_ROOT/patches/uutils/"*.patch; do
         echo "Applying patch: $(basename "$patch")"
-        ~/.local/chimera-bin/bin/patch < "$patch"
+        cpatch < "$patch"
     done
     touch $REPO_ROOT/.uutilspatched
     rm GNUmakefile.orig

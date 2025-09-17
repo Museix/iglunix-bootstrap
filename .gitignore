@@ -37,3 +37,7 @@ src
 .libexecinfo
 .sqlite
 .uutilspatched
+.llvmbuilt
+.buildagain
+.update
+*.tar.gz

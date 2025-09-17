@@ -11,7 +11,7 @@ echo ">> fetching musl $MUSL_VER"
 echo ">> fetching LLVM $LLVM_VER"
 [ ! -f "$SOURCES/llvm-$LLVM_VER.tar.xz" ] && curl -L --retry 3 "https://github.com/llvm/llvm-project/releases/download/llvmorg-$LLVM_VER/llvm-project-$LLVM_VER.src.tar.xz" -o $SOURCES/llvm-$LLVM_VER.tar.xz
 echo ">> fetching dash $DASH_VER"
-[ ! -f "$SOURCES/dash-$DASH_VER.tar.gz" ] && curl -L --retry 3 "http://gondor.apana.org.au/~herbert/dash/files/dash-$DASH_VER.tar.gz" -o "$SOURCES/dash-$DASH_VER.tar.gz"
+[ ! -f "$SOURCES/dash-$DASH_VER.tar.gz" ] && curl -L --retry 3 "https://git.kernel.org/pub/scm/utils/dash/dash.git/snapshot/dash-$DASH_VER.tar.gz" -o "$SOURCES/dash-$DASH_VER.tar.gz"
 echo ">> fetching GNU Make $GMAKE_VER"
 [ ! -f "$SOURCES/make-$GMAKE_VER.tar.gz" ] && curl -L --retry 3 "https://ftp.gnu.org/gnu/make/make-$GMAKE_VER.tar.gz" -o $SOURCES/make-$GMAKE_VER.tar.gz
 echo ">> fetching zlib-ng $ZLIB_NG_VER"

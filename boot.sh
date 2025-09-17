@@ -1,5 +1,49 @@
 #!/bin/sh -e
+#!/bin/sh
 
+# This script demonstrates how to detect an available sudo-like command
+# and re-execute itself with elevated privileges if needed.
+
+# --- Privilege Escalation Check ---
+
+# Check if the script is running as root.
+# The `id -u` command prints the user ID, which is 0 for the root user.
+if [ "$(id -u)" -eq 0 ]; then
+    # Already root, do nothing special.
+    :
+else
+    # Not root, so we need to find a way to gain privileges.
+    SUDO_CMD=""
+
+    # Check for 'sudo' command.
+    if command -v sudo >/dev/null 2>&1; then
+        SUDO_CMD="sudo"
+    # If 'sudo' is not found, check for 'doas'.
+    elif command -v doas >/dev/null 2>&1; then
+        SUDO_CMD="doas"
+    fi
+
+    # If we found a command, re-execute the script with it.
+    if [ -n "$SUDO_CMD" ]; then
+        echo "This script needs root privileges. Re-executing with '$SUDO_CMD'..."
+        # "$0" is the path to the current script.
+        # "$@" expands to all the arguments passed to the script.
+        # 'exec' replaces the current shell process with the new command.
+        exec "$SUDO_CMD" "$0" "$@"
+    else
+        # If no command was found, print an error and exit.
+        echo "Error: This script requires root privileges, but neither 'sudo' nor 'doas' was found." >&2
+        exit 1
+    fi
+fi
+
+# --- Main Script Logic ---
+
+# From this point onwards, the script is running with root privileges.
+echo "Running with root privileges (UID: $(id -u))"
+
+[ -f $REPO_ROOT/.update ] && rm -f .update .muslpatched .uutilspatched
+[ -f $REPO_ROOT/.buildagain ] && rm -f .buildagain .busybox .compiler-rt .cryptlib .curl .dash .etc .libatomic .libcxx .libedit .libexecinfo .libgcc .libunwind .linux-headers .llvm .make .mksh .musl .musl-headers .ncurses .oniguruma .openssl .pkgconf .rust .sqlite .tblgen .toybox .util-linux .uutils .uutilspatched .zlib-ng build sanity sysroot
 if [ -z "$1" ]; then
 	ARCH=`uname -m`
 	export ARCH
@@ -66,8 +110,8 @@ CXXFLAGS="$COMMON_FLAGS -stdlib=libc++"
 LDFLAGS="$COMMON_FLAGS -fuse-ld=lld -rtlib=compiler-rt"
 export CFLAGS CXXFLAGS LDFLAGS
 
-CC=clang
-CXX=clang++
+CC=/usr/bin/clang
+CXX=/usr/bin/clang++
 export CC CXX
 
 AR=llvm-ar
@@ -180,6 +224,7 @@ chmod 755 "$SYSROOT/var/lock"
 ./03-compiler-rt.sh
 
 sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* `clang -print-resource-dir`/lib/linux
+sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* `/usr/bin/clang -print-resource-dir`/lib/linux
 
 ./04-musl.sh
 
@@ -225,3 +270,8 @@ env -u CFLAGS -u CXXFLAGS -u LDFLAGS ./11-tblgen.sh
 
 # Build and install GNU Make
 ./14-gmake.sh
+
+[ -f *.tar.gz ] && touch $REPO_ROOT/.buildagain && rm -f *.tar.gz
+tar czf MUSEIX-$ARCH-$(date +%Y%m%d).tar.gz sysroot
+chmod 666 MUSEIX-$ARCH-$(date +%Y%m%d).tar.gz
+log "chroot archive created: MUSEIX-$ARCH-$(date +%Y%m%d).tar.gz"

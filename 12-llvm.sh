@@ -11,7 +11,7 @@ ls -l $BUILD/tblgen/bin/
 file $BUILD/tblgen/bin/*
 
 set -e
-
+if [ ! -f "$REPO_ROOT/.llvmbuilt" ]; then
 cmake -G Ninja "$SOURCES/llvm-$LLVM_VER/llvm" \
 -DCMAKE_C_COMPILER=$CC \
 -DCMAKE_CXX_COMPILER=$CXX \
@@ -112,12 +112,12 @@ cmake -G Ninja "$SOURCES/llvm-$LLVM_VER/llvm" \
 
 samu
 
-DESTDIR=$SYSROOT samu install
-
-[ ! -f $SYSROOT/usr/bin/cc ] ln -s clang $SYSROOT/usr/bin/cc
-[ ! -f $SYSROOT/usr/bin/c89 ] ln -s clang $SYSROOT/usr/bin/c89
-[ ! -f $SYSROOT/usr/bin/c99 ] ln -s clang $SYSROOT/usr/bin/c99
-[ ! -f $SYSROOT/usr/bin/c++ ] ln -s clang++ $SYSROOT/usr/bin/c++
-[ ! -f $SYSROOT/usr/bin/ld ] ln -s ld.lld $SYSROOT/usr/bin/ld
+DESTDIR=$SYSROOT samu install && touch $REPO_ROOT/.llvmbuilt
+fi
+[ ! -f $SYSROOT/usr/bin/cc  ] && ln -s clang $SYSROOT/usr/bin/cc
+[ ! -f $SYSROOT/usr/bin/c89 ] && ln -s clang $SYSROOT/usr/bin/c89
+[ ! -f $SYSROOT/usr/bin/c99 ] && ln -s clang $SYSROOT/usr/bin/c99
+[ ! -f $SYSROOT/usr/bin/c++ ] && ln -s clang++ $SYSROOT/usr/bin/c++
+[ ! -f $SYSROOT/usr/bin/ld  ] && ln -s ld.lld $SYSROOT/usr/bin/ld
 
 touch $REPO_ROOT/.llvm
