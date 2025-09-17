@@ -14,25 +14,34 @@ if [ ! -f "$BOOT_SCRIPT" ]; then
     exit 1
 fi
 
+UPDATE_AVAILABLE=0
+
 # --- Helper Functions ---
 
 get_current_version() {
     grep "export $1=" "$BOOT_SCRIPT" | cut -d'=' -f2
 }
 
+update_version_in_script() {
+    variable_name=$1
+    new_version=$2
+    sed -i "s/^\(export ${variable_name}=\).*/\1${new_version}/" "$BOOT_SCRIPT"
+}
 print_status() {
     component=$1
     current=$2
     latest=$3
 
     if [ -z "$latest" ] || [ "$latest" = "null" ]; then
-        printf "%-15s | %-15s | %s\n" "$component" "$current" "Failed to get latest version"
+        printf "%-15s | %-15s | \033[0;31mFailed to get latest version. Try searching for: 'latest version %s'\033[0m\n" "$component" "$current" "$component"
         return
     fi
 
     if [ "$current" = "$latest" ]; then
         printf "%-15s | %-15s | %s\n" "$component" "$current" "Up to date"
     else
+        UPDATE_AVAILABLE=1
+        update_version_in_script "$(echo "$component" | awk '{print $1}' | tr '[:lower:]' '[:upper:]' | tr '-' '_')_VER" "$latest"
         printf "%-15s | %-15s | \033[1;33mUpdate available: %s\033[0m\n" "$component" "$current" "$latest"
     fi
 }
@@ -78,7 +87,7 @@ print_status "musl" "$MUSL_VER" "$LATEST_MUSL"
 
 # Linux Kernel
 KERN_VER=$(get_current_version KERN_VER)
-LATEST_KERN=$(curl -s "https://www.kernel.org/releases.json" | grep '"version":' | sed -E 's/.*"version": "([^"]+)".*/\1/' | head -n 1)
+LATEST_KERN=$(curl -s "https://www.kernel.org/releases.json" | jq -r '.releases[] | select(.islts == true) | .version' | sort -V | tail -n 1)
 print_status "Kernel" "$KERN_VER" "$LATEST_KERN"
 
 # mksh
@@ -148,4 +157,9 @@ LATEST_SQLITE_VER=$(echo "$LATEST_SQLITE_CODE" | sed -E 's/(.)(..)(..)../\1.\2.\
 print_status "sqlite" "$SQLITE_VER" "$LATEST_SQLITE_VER"
 
 echo "-----------------------------------------------------"
-echo "Update check complete." && touch $REPO_ROOT/.update && exit 0
+echo "Update check complete."
+
+if [ "$UPDATE_AVAILABLE" -eq 1 ]; then
+    echo "Updates are available. boot.sh has been updated and .update file has been touched."
+    touch "$CURRENT_DIR/.update"
+fi

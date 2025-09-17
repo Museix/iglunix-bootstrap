@@ -65,7 +65,7 @@ error() {
 }
 export error
 
-export LLVM_VER=21.1.0
+export LLVM_VER=21.1.1
 export MUSL_VER=1.2.5
 export KERN_VER=6.12.47
 export MKSH_VER=R59c
@@ -81,7 +81,7 @@ export UUTILS_VER=0.2.2
 export UTIL_LINUX_VER=2.41.1
 export DASH_VER=0.5.12
 export LIBEXECINFO_VER=1.1.0.13
-export PKGCONF_VER=1.1.0
+export PKGCONF_VER=2.5.1
 export LIBPSL_VER=0.21.5
 export LIBUNISTRING_VER=1.1
 export SQLITE_VER=3.50.4
