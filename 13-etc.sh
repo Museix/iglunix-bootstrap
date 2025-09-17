@@ -17,7 +17,7 @@ error() {
 }
 
 # Source directory containing etc files
-ETC_SOURCE="$SYSROOT/etc"
+ETC_SOURCE="$REPO_ROOT/etc"
 ETC_TARGET="$SYSROOT/etc"
 
 log "Installing /etc directory structure..."
@@ -33,12 +33,21 @@ fi
 log "Copying etc files from $ETC_SOURCE to $ETC_TARGET"
 
 # Copy all files and directories from source etc
-cp -r "$ETC_SOURCE" "$ETC_TARGET"/
+cp -r "$ETC_SOURCE/." "$ETC_TARGET/"
 
 # Create additional directories that might not exist
 mkdir -p "$ETC_TARGET"/{init.d,rc.d,cron.d,logrotate.d,sudoers.d}
 mkdir -p "$ETC_TARGET"/profile.d
 mkdir -p "$ETC_TARGET"/skel
+
+# Make init scripts executable
+if [ -f "$ETC_TARGET/rc.sysinit" ]; then
+    chmod 755 "$ETC_TARGET/rc.sysinit"
+fi
+
+if [ -f "$ETC_TARGET/rc.multi" ]; then
+    chmod 755 "$ETC_TARGET/rc.multi"
+fi
 
 # Set proper permissions for sensitive files
 log "Setting proper permissions..."

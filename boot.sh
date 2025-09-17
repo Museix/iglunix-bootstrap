@@ -25,18 +25,28 @@ export LLVM_VER=21.1.0
 export MUSL_VER=1.2.5
 export KERN_VER=6.12.47
 export MKSH_VER=R59c
-export BUSYBOX_VER=1.37.0
-export TOYBOX_VER=0.8.12
 export GMAKE_VER=4.4.1
 export ZLIB_NG_VER=2.2.5
 export OPENSSL_VER=3.5.2
 export CRYPTLIB_VER=3.4.8
 export NCURSES_VER=6.5
+export LIBEDIT_VER=2004
+export ONIGURUMA_VER=6.9.10
+export RUST_VER=1.89.0
+export UUTILS_VER=0.2.2
+export UTIL_LINUX_VER=2.41.1
+export DASH_VER=0.5.12
+export LIBEXECINFO_VER=1.1.0.13
+export PKGCONF_VER=1.1.0
+export LIBPSL_VER=0.21.5
+export LIBUNISTRING_VER=1.1
+export SQLITE_VER=3.50.4
+export SQLITE_VER_CODE=3500400
 
 export TARGET=$ARCH-linux-musl
 
 # Get absolute path in POSIX-compliant way
-REPO_ROOT=`cd "\`dirname "$0"\`" && pwd`
+REPO_ROOT=`cd \`dirname "$0"\` && pwd`
 export REPO_ROOT
 SOURCES="$REPO_ROOT/src"
 BUILD="$REPO_ROOT/build"
@@ -49,10 +59,11 @@ COMMON_FLAGS="-O2 -pipe -fpie -fpic --sysroot=$SYSROOT -unwindlib=libunwind"
 if [ "$ARCH" = "riscv64" ]; then
 	COMMON_FLAGS="$COMMON_FLAGS -mno-relax"
 fi
-
+RUSTFLAGS="-C link-arg=-fuse-ld=lld -C link-arg=--sysroot=$SYSROOT"
+export RUSTFLAGS
 CFLAGS="$COMMON_FLAGS"
 CXXFLAGS="$COMMON_FLAGS -stdlib=libc++"
-LDFLAGS="-fuse-ld=lld -rtlib=compiler-rt"
+LDFLAGS="$COMMON_FLAGS -fuse-ld=lld -rtlib=compiler-rt"
 export CFLAGS CXXFLAGS LDFLAGS
 
 CC=clang
@@ -180,19 +191,31 @@ sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* `clang -print-resource-dir`
 
 ./05-libunwind.sh
 
+./09-libatomic.sh
+
 ./06-libcxx.sh
 
 ./07-sanity.sh
+
+sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* `clang -print-resource-dir`/lib/linux -f
 
 CC=`pwd`/$ARCH-iglunix-linux-musl-cc.sh
 CXX=`pwd`/$ARCH-iglunix-linux-musl-c++.sh
 export CC CXX
 
-./08-mksh.sh
+./08-dash.sh
 
-./09-busybox.sh
+./10-pkgconfig.sh
 
-./10-toybox.sh
+./19-oniguruma.sh
+
+./23-curl.sh
+
+./21-uutils.sh
+
+./25-sqlite.sh
+
+./22-util-linux.sh
 
 env -u CFLAGS -u CXXFLAGS -u LDFLAGS ./11-tblgen.sh
 

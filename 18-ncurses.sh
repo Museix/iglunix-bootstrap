@@ -25,9 +25,10 @@ cd "$NCURSES_BUILD"
     --enable-pc-files \
     --with-pkg-config-libdir=/usr/lib/pkgconfig \
     CC="$CC" \
-    CFLAGS="$CFLAGS -fPIC" \
-    CXXFLAGS="$CXXFLAGS -fPIC" \
-    LDFLAGS="$LDFLAGS"
+    CFLAGS="-target $TARGET $CFLAGS -fPIC" \
+    CXX="$CXX" \
+    CXXFLAGS="-target $TARGET $CXXFLAGS -fPIC" \
+    LDFLAGS="-L$SYSROOT/usr/lib -lc $LDFLAGS"
 
 make -j$(nproc)
 

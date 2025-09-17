@@ -1,0 +1,12 @@
+#!/bin/sh
+# /etc/rc.sysinit
+
+# Mount /proc and /sys
+mount -t proc proc /proc
+mount -t sysfs sys /sys
+
+# Set hostname
+. /etc/rc.conf
+hostname "$HOSTNAME"
+
+echo "System initialization complete."

@@ -1,0 +1,4 @@
+#!/bin/sh
+# /etc/rc.multi
+
+echo "Entering multi-user runlevel."

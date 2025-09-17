@@ -12,6 +12,6 @@ cmake -G Ninja "$SOURCES/llvm-$LLVM_VER/llvm" \
 -DCMAKE_CXX_COMPILER=c++ \
 -DCMAKE_BUILD_TYPE=Release
 
-samu llvm-tblgen clang-tblgen
+samu llvm-tblgen clang-tblgen llvm-min-tblgen
 
 touch $REPO_ROOT/.tblgen

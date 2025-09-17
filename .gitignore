@@ -1,4 +1,4 @@
-.fetched
+# Ignore build artifacts and state files
 .boot*
 build
 sources
@@ -24,3 +24,16 @@ src
 .cryptlib
 .libedit
 .ncurses
+.oniguruma
+.libatomic
+.dash
+.libgcc
+.rust
+.uutils
+.util-linux
+.muslpatched
+.curl
+.pkgconf
+.libexecinfo
+.sqlite
+.uutilspatched

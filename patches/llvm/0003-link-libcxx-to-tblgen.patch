@@ -1,0 +1,10 @@
+--- a/src/llvm-project/llvm/utils/TableGen/CMakeLists.txt
++++ b/src/llvm-project/llvm/utils/TableGen/CMakeLists.txt
+@@ -X,Y +X,Y @@
+ add_llvm_tool(llvm-min-tblgen
+   llvm-min-tblgen.cpp
+   PRIVATE
+-  LLVMSupport
+-  LLVMTableGen
++  LLVMSupport LLVMTableGen c++ c++abi unwind atomic
+   )
