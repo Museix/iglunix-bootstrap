@@ -42,7 +42,7 @@ fi
 # From this point onwards, the script is running with root privileges.
 echo "Running with root privileges (UID: $(id -u))"
 
-[ -f $REPO_ROOT/.update ] && rm -f .update .muslpatched .uutilspatched
+[ -f $REPO_ROOT/.update ] && rm -f .update .muslpatched .uutilspatched src
 [ -f $REPO_ROOT/.buildagain ] && rm -f .buildagain .busybox .compiler-rt .cryptlib .curl .dash .etc .libatomic .libcxx .libedit .libexecinfo .libgcc .libunwind .linux-headers .llvm .make .mksh .musl .musl-headers .ncurses .oniguruma .openssl .pkgconf .rust .sqlite .tblgen .toybox .util-linux .uutils .uutilspatched .zlib-ng build sanity sysroot
 if [ -z "$1" ]; then
 	ARCH=`uname -m`
