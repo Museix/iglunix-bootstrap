@@ -85,8 +85,6 @@ mkdir -p "$SYSROOT"
 
 mkdir -p "$SYSROOT/usr/bin"
 mkdir -p "$SYSROOT/usr/lib"
-mkdir -p "$SYSROOT/bin"
-mkdir -p "$SYSROOT/sbin"
 mkdir -p "$SYSROOT/var"
 mkdir -p "$SYSROOT/opt"
 mkdir -p "$SYSROOT/srv"
@@ -139,9 +137,11 @@ mkdir -p "$SYSROOT"/etc
 log "Creating compatibility symlinks..."
 
 # Create lib, lib64, and usr/lib64 as symlinks to usr/lib
-ln -sf usr/lib "$SYSROOT"/lib
-ln -sf usr/lib "$SYSROOT"/lib64
-ln -sf lib "$SYSROOT"/usr/lib64
+ln -sf usr/lib  "$SYSROOT"/lib
+ln -sf usr/lib  "$SYSROOT"/lib64
+ln -sf lib      "$SYSROOT"/usr/lib64
+ln -sf usr/bin  "$SYSROOT"/bin
+ln -sf usr/sbin "$SYSROOT"/sbin 
 
 # Create /usr/lib/locale for locale support
 mkdir -p "$SYSROOT"/usr/lib/locale
