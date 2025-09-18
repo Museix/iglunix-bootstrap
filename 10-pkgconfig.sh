@@ -1,7 +1,6 @@
 #!/bin/sh -e
 [ -f "$REPO_ROOT/.pkgconf" ] && exit 0
 
-PKGCONF_VER=1.1.0
 PKGCONF_SRC="$SOURCES/pkgconf-$PKGCONF_VER"
 PKGCONF_BUILD="$BUILD/pkgconf"
 

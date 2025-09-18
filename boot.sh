@@ -1,49 +1,63 @@
 #!/bin/sh -e
-#!/bin/sh
 
 # This script demonstrates how to detect an available sudo-like command
 # and re-execute itself with elevated privileges if needed.
 
+# --- Constants ---
+SCRIPT_NAME="$(basename "$0")"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
+FULL_SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_NAME"
+
+# --- Helper Functions ---
+die() {
+    echo "${SCRIPT_NAME}: $*" >&2
+    exit 1
+}
+
 # --- Privilege Escalation Check ---
 
 # Check if the script is running as root.
-# The `id -u` command prints the user ID, which is 0 for the root user.
 if [ "$(id -u)" -eq 0 ]; then
-    # Already root, do nothing special.
-    :
+    # Already root, verify we can write to required directories
+    : # Continue with the script
 else
-    # Not root, so we need to find a way to gain privileges.
+    # Not root, try to find a privilege escalation command
     SUDO_CMD=""
-
-    # Check for 'sudo' command.
+    
+    # Check for sudo with keep environment flag
     if command -v sudo >/dev/null 2>&1; then
-        SUDO_CMD="sudo"
-    # If 'sudo' is not found, check for 'doas'.
+        if sudo -n true 2>/dev/null; then
+            SUDO_CMD="sudo -E"  # -E preserves environment
+        else
+            SUDO_CMD="sudo"
+        fi
+    # Fall back to doas if sudo is not available
     elif command -v doas >/dev/null 2>&1; then
         SUDO_CMD="doas"
     fi
 
-    # If we found a command, re-execute the script with it.
+    # If we found a command, re-execute the script with it
     if [ -n "$SUDO_CMD" ]; then
-        echo "This script needs root privileges. Re-executing with '$SUDO_CMD'..."
-        # "$0" is the path to the current script.
-        # "$@" expands to all the arguments passed to the script.
-        # 'exec' replaces the current shell process with the new command.
-        exec "$SUDO_CMD" "$0" "$@"
+        echo "${SCRIPT_NAME}: This script needs root privileges. Re-executing with '$SUDO_CMD'..."
+        # Use exec to replace current process, preserving all arguments and environment
+        exec $SUDO_CMD "$FULL_SCRIPT_PATH" "$@"
     else
-        # If no command was found, print an error and exit.
-        echo "Error: This script requires root privileges, but neither 'sudo' nor 'doas' was found." >&2
-        exit 1
+        die "This script must be run as root. No privilege escalation command (sudo/doas) available."
     fi
+fi
+
+# Verify we're running as root after privilege escalation
+if [ "$(id -u)" -ne 0 ]; then
+    die "Failed to gain root privileges. Current UID: $(id -u)"
 fi
 
 # --- Main Script Logic ---
 
 # From this point onwards, the script is running with root privileges.
 echo "Running with root privileges (UID: $(id -u))"
-
-[ -f $REPO_ROOT/.update ] && rm -f .update .muslpatched .uutilspatched src
-[ -f $REPO_ROOT/.buildagain ] && rm -f .buildagain .busybox .compiler-rt .cryptlib .curl .dash .etc .libatomic .libcxx .libedit .libexecinfo .libgcc .libunwind .linux-headers .llvm .make .mksh .musl .musl-headers .ncurses .oniguruma .openssl .pkgconf .rust .sqlite .tblgen .toybox .util-linux .uutils .uutilspatched .zlib-ng build sanity sysroot
+[ -f $REPO_ROOT/.update ] && rm -rf .update .muslpatched .uutilspatched src build
+# Clean up build markers if a rebuild is requested
+[ -f "$REPO_ROOT/.buildagain" ] && rm -rf "$REPO_ROOT/.buildagain" $REPO_ROOT/."{busybox,compiler-rt,cryptlib,curl,dash,etc,libatomic,libcxx,libedit,libexecinfo,libgcc,libunwind,linux-headers,llvm,make,mksh,musl,musl-headers,ncurses,oniguruma,openssl,pkgconf,rust,sqlite,tblgen,toybox,util-linux,uutils,uutilspatched,zlib-ng}" "$REPO_ROOT/build" "$REPO_ROOT/sanity" "$REPO_ROOT/sysroot"
 if [ -z "$1" ]; then
 	ARCH=`uname -m`
 	export ARCH
@@ -68,7 +82,6 @@ export error
 export LLVM_VER=21.1.1
 export MUSL_VER=1.2.5
 export KERN_VER=6.12.47
-export MKSH_VER=R59c
 export GMAKE_VER=4.4.1
 export ZLIB_NG_VER=2.2.5
 export OPENSSL_VER=3.5.2
@@ -86,6 +99,7 @@ export LIBPSL_VER=0.21.5
 export LIBUNISTRING_VER=1.1
 export SQLITE_VER=3.50.4
 export SQLITE_VER_CODE=3500400
+export AEE_VER=2.2.25
 
 export TARGET=$ARCH-linux-musl
 
@@ -223,8 +237,21 @@ chmod 755 "$SYSROOT/var/lock"
 
 ./03-compiler-rt.sh
 
-sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* `clang -print-resource-dir`/lib/linux
-sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* `/usr/bin/clang -print-resource-dir`/lib/linux
+# Create target directory if it doesn't exist
+mkdir -p "$SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux"
+
+# Only try to copy if there are files to copy
+if [ -d "$SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux" ] && [ "$(ls -A $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux 2>/dev/null)" ]; then
+    # Try to copy to system clang's resource directory if it exists
+    if [ -d "$(clang -print-resource-dir 2>/dev/null)/lib/linux" ]; then
+        sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* "$(clang -print-resource-dir 2>/dev/null)/lib/linux/" || true
+    fi
+    
+    # Also try with full path to clang
+    if [ -d "$(/usr/bin/clang -print-resource-dir 2>/dev/null)/lib/linux" ]; then
+        sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* "$(/usr/bin/clang -print-resource-dir 2>/dev/null)/lib/linux/" || true
+    fi
+fi
 
 ./04-musl.sh
 
@@ -242,7 +269,18 @@ sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* `/usr/bin/clang -print-reso
 
 ./07-sanity.sh
 
-sudo cp $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* `clang -print-resource-dir`/lib/linux -f
+# Only try to copy if there are files to copy
+if [ -d "$SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux" ] && [ "$(ls -A $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux 2>/dev/null)" ]; then
+    # Try to copy to system clang's resource directory if it exists
+    if [ -d "$(clang -print-resource-dir 2>/dev/null)/lib/linux" ]; then
+        sudo cp -f $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* "$(clang -print-resource-dir 2>/dev/null)/lib/linux/" || true
+    fi
+    
+    # Also try with full path to clang
+    if [ -d "$(/usr/bin/clang -print-resource-dir 2>/dev/null)/lib/linux" ]; then
+        sudo cp -f $SYSROOT/usr/lib/clang/$LLVM_VER/lib/linux/* "$(/usr/bin/clang -print-resource-dir 2>/dev/null)/lib/linux/" || true
+    fi
+fi
 
 CC=`pwd`/$ARCH-iglunix-linux-musl-cc.sh
 CXX=`pwd`/$ARCH-iglunix-linux-musl-c++.sh
@@ -254,9 +292,14 @@ export CC CXX
 
 ./19-oniguruma.sh
 
+# Build libxo, libxml2, and tinygettext
+./16-libxo-xml2-tinygettext.sh
+
 ./23-curl.sh
 
-./21-uutils.sh
+./17-libacl-md-bsd.sh
+
+./21-chimerautils.sh
 
 ./25-sqlite.sh
 
@@ -270,6 +313,10 @@ env -u CFLAGS -u CXXFLAGS -u LDFLAGS ./11-tblgen.sh
 
 # Build and install GNU Make
 ./14-gmake.sh
+
+./27-sed.sh
+
+./26-amp.sh
 
 [ -f *.tar.gz ] && touch $REPO_ROOT/.buildagain && rm -f *.tar.gz
 tar czf MUSEIX-$ARCH-$(date +%Y%m%d).tar.gz sysroot

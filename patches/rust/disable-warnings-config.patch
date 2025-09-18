@@ -1,0 +1,9 @@
+# Create a new patch file
+cat > /home/lucy/src/iglunix-bootstrap/patches/rust/disable-bootstrap-warnings.patch << 'EOF'
+--- a/bootstrap.toml
++++ b/bootstrap.toml
+@@ -114,5 +114,6 @@
+ [rust]
+
++deny-warnings = false  # Explicitly disable warnings for bootstrap
+ 

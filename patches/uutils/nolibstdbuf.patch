@@ -1,4 +1,6 @@
-458c458
-< ifneq ($(OS),Windows_NT)
+--- a/GNUmakefile
++++ b/GNUmakefile
+@@ -458,7 +458,7 @@
+-ifneq ($(OS),Windows_NT)
 ---
-> ifeq ($(OS),Windows_NT)
++ifeq ($(OS),Windows_NT)

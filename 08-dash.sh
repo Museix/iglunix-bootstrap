@@ -7,7 +7,7 @@ cd "$BUILD"
 rm -rf dash-$DASH_VER
 tar -xf "$SOURCES/dash-$DASH_VER.tar.gz"
 cd dash-$DASH_VER
-
+./autogen.sh
 ./configure --prefix=/usr --host=$TARGET
 make -j$(nproc)
 make DESTDIR=$SYSROOT install

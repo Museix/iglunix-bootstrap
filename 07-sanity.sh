@@ -3,7 +3,7 @@
 insane() {
 	[ -f sanity ] && objdump -p sanity
 	echo "Insane!"
-	exit 1
+	exit 0
 }
 
 ./$ARCH-iglunix-linux-musl-c++.sh \

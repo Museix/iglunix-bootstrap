@@ -1,0 +1,21 @@
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "vendor"
+
+# Patch libc to use system libunwind
+[patch.crates-io]
+libc = { path = "vendor/libc-0.2.172" }
+
+# Ensure we use the vendored sources for all dependencies
+[source."https://github.com/rust-lang/crates.io-index"]
+replace-with = "vendored-sources"
+
+# Use system LLVM
+[target.x86_64-unknown-linux-musl]
+llvm-config = "/usr/bin/llvm-config"
+llvm-has-rust-patches = true
+
+[build]
+target = ["x86_64-unknown-linux-musl"]

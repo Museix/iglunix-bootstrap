@@ -90,11 +90,6 @@ KERN_VER=$(get_current_version KERN_VER)
 LATEST_KERN=$(curl -s "https://www.kernel.org/releases.json" | jq -r '.releases[] | select(.islts == true) | .version' | sort -V | tail -n 1)
 print_status "Kernel" "$KERN_VER" "$LATEST_KERN"
 
-# mksh
-MKSH_VER=$(get_current_version MKSH_VER)
-LATEST_MKSH=$(curl -s "https://www.mirbsd.org/mksh.htm" | grep -o 'mksh-R[0-9]*[a-z]*\.tgz' | sed -e 's/mksh-\(R[0-9]*[a-z]*\)\.tgz/\1/' | sort -V | tail -n 1)
-print_status "mksh" "$MKSH_VER" "$LATEST_MKSH"
-
 # GNU Make
 GMAKE_VER=$(get_current_version GMAKE_VER)
 LATEST_GMAKE=$(curl -s "https://ftp.gnu.org/gnu/make/" | grep -o 'make-[0-9.]*\.tar\.gz' | sed 's/make-\(.*\)\.tar\.gz/\1/' | sort -V | tail -n 1)
