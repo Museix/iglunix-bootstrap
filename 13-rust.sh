@@ -3,7 +3,7 @@
 
 cd $SOURCES/rustc-1.89.0-src
 
-patch -p1 < $REPO_ROOT/rust-museix.patch
+/usr/local/bin/cpatch -p1 < rust-museix.patch
 
 ./configure --prefix=$SYSROOT/usr \
     --release-channel=stable
