@@ -7,6 +7,7 @@ sanity
 sysroot
 src
 .fetched
+.linux-headers
 .musl-headers
 .compiler-rt
 .musl
