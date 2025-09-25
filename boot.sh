@@ -11,7 +11,7 @@ export MUSL_VER=1.2.3
 export KERN_VER=6.2.7
 export MKSH_VER=R59c
 export BUSYBOX_VER=1.36.0
-export TOYBOX_VER=0.8.9
+export POSIXUTILS_RS_VER=0.2.2
 
 export TARGET=$ARCH-linux-musl
 
@@ -72,15 +72,13 @@ sudo cp $SYSROOT/usr/lib/clang/16/lib/linux/* $(clang -print-resource-dir)/lib/l
 
 ./07-sanity.sh
 
-export CC=$(pwd)/$ARCH-iglunix-linux-musl-cc.sh
-export CXX=$(pwd)/$ARCH-iglunix-linux-musl-c++.sh
+export CC=$(pwd)/$ARCH-museix-linux-musl-cc.sh
+export CXX=$(pwd)/$ARCH-museix-linux-musl-c++.sh
 
 ./08-mksh.sh
 
 ./09-busybox.sh
 
-./10-toybox.sh
+./13-rust.sh
 
-env -u CFLAGS -u CXXFLAGS -u LDFLAGS ./11-tblgen.sh
-
-./12-llvm.sh
+./10-posixutils-rs.sh
